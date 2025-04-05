@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 function TopBanner() {
   return (
     <div className="relative w-full">
-      <img src={banner1} alt="" className="w-full h-[500px] object-cover" />
+      <img src={banner1} alt="" className="w-full h-[600px] object-cover" />
       <motion.div
         initial={{ opacity: 0,y:-50 }}
         animate={{ opacity: 1 ,y:0}}
@@ -16,7 +16,8 @@ function TopBanner() {
         nature to bring out the glow you were born with. Whether you're looking
         to heal, protect, or simply indulge, SkinBuddy is your trusted companion
         on every step of your skincare journey. Because your skin deserves more
-        than just care — it deserves a buddy.
+        than just care — it deserves a buddy. <br /><br />
+        WE CARE FOR YOUR SKIN 
       </motion.div>
     </div>
   );
