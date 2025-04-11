@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import banner1 from "../assets/desktop/homeBanner_1.jpg";
+import banner1 from "../assets/desktop/banner1.jpg";
 import { motion } from "framer-motion";
 function TopBanner() {
   return (
     <div className="relative w-full">
-      <img src={banner1} alt="" className="w-full h-[600px] object-cover" />
-      <motion.div
+      <img src={banner1} alt="" className="w-full h-[600px] object-conatin" />
+      {/* <motion.div
         initial={{ opacity: 0,y:-50 }}
         animate={{ opacity: 1 ,y:0}}
         transition={{duration:2}}
@@ -18,7 +18,7 @@ function TopBanner() {
         on every step of your skincare journey. Because your skin deserves more
         than just care — it deserves a buddy. <br /><br />
         WE CARE FOR YOUR SKIN 
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 }
