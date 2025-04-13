@@ -37,13 +37,18 @@ function Navbar() {
             </Link>
           </div>
           <div className="flex items-center justify-center w-full h-full ">
-            <div className="flex px-2 py-1 border rounded w-[70%]">
-              <IoIosSearch size={25} />
+            <div className="flex justify-between   bg-gray-100 rounded w-[70%]">
               <input
                 type="text"
                 placeholder="Search..."
-                className="px-2 text-xl text-gray-600 outline-none"
+                className="px-2 text-xl text-gray-700 outline-none"
               />
+              <div className="relative">
+                <span className="absolute inline-flex h-full w-full rounded border animate-ping bg-[#f18526] opacity-75" />
+                <div className="relative px-2 py-1 border rounded bg-[#f18526] text-white">
+                  <IoIosSearch size={25} />
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex justify-end p-6 pr-20 gap-6 w-[50%]">

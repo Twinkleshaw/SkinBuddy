@@ -21,7 +21,7 @@ function SensitiveProduct() {
       >
         For Sensitive Skin
       </h2>
-      <div className="flex">
+      <div className="flex flex-wrap">
         {sensitive?.map((product, i) => (
            <motion.div
            key={i}
