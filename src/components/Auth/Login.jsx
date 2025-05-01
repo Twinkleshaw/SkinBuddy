@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 function Login({ isOpen, onClose, onSwitchToSignup }) {
   if (!isOpen) return null;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const handleChange = (e) => {
@@ -88,10 +89,10 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
 
 
   return (
-    <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 bg-black/70">
       <div className="bg-white p-6 rounded-md w-full max-w-[400px] relative">
         <button
-          className="absolute top-4 right-3 text-gray-500 hover:text-black cursor-pointer"
+          className="absolute text-gray-500 cursor-pointer top-4 right-3 hover:text-black"
           onClick={onClose}
         >
           <RxCross2 />
@@ -113,7 +114,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
               required
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md outline-none"
+              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md outline-none"
             />
           </div>
           <div>
@@ -126,7 +127,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
               required
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md outline-none"
+              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md outline-none"
             />
           </div>
           <button
@@ -143,7 +144,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
           />
         </div>
 
-        <p className="text-sm text-center text-gray-600 mt-4">
+        <p className="mt-4 text-sm text-center text-gray-600">
           Don’t have an account?{" "}
           <button
             className="text-[#539d68] hover:underline"

@@ -8,12 +8,14 @@ import Login from "./Auth/Login";
 import Signup from "./Auth/SignUp";
 import Cart from "./Cart";
 import { useCart } from "../Context/CartContext";
-
+import { RxCross2 } from "react-icons/rx";
 function Navbar() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const { cartItems } = useCart();
+  const token = localStorage.getItem("token");
   const handleOpenLogin = () => {
     setShowLogin(true);
     setShowSignup(false); // close signup if open
@@ -34,8 +36,12 @@ function Navbar() {
     setOpenCart(true);
   };
 
+    const handleProfile = () => {
+      setIsProfileOpen(true);
+    };
+
   return (
-    <div className="fixed top-0 left-0 w-full bg-white shadow z-50">
+    <div className="fixed top-0 left-0 z-50 w-full bg-white shadow">
       <nav>
         <ul className="flex items-center justify-around h-20">
           <div className="w-full">
@@ -83,10 +89,57 @@ function Navbar() {
             </div>
           </div>
 
-          <div className="flex justify-end p-6 pr-20 gap-6 w-[50%]">
-            <button onClick={handleOpenLogin}>
-              <IoPerson size={25} className="text-gray-700 cursor-pointer" />
-            </button>
+          <div className="flex relative  justify-end p-6 pr-20 gap-6 w-[50%]">
+            {token ? (
+              <>
+                {isProfileOpen ? (
+                  <button onClick={() => setIsProfileOpen(false)}>
+                    <RxCross2
+                      size={25}
+                      className="text-gray-700 cursor-pointer"
+                    />
+                  </button>
+                ) : (
+                  <button onClick={() => setIsProfileOpen(true)}>
+                    <IoPerson
+                      size={25}
+                      className="text-gray-700 cursor-pointer"
+                    />
+                  </button>
+                )}
+
+                {isProfileOpen && (
+                  <div className="absolute z-50 mt-6 bg-white border border-gray-400 rounded shadow-lg left-2 w-36">
+                    <button
+                      onClick={handleProfile}
+                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                    >
+                      Profile
+                    </button>
+                    <button
+                      onClick={handleProfile}
+                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                    >
+                      Order History
+                    </button>
+                    <button
+                      // onClick={handleLogout}
+                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <button
+                onClick={handleOpenLogin}
+                className="text-white bg-[#539d68] px-2 py-0.5 rounded"
+              >
+                Login
+              </button>
+            )}
+
             <div className="relative">
               <FaCartShopping
                 size={25}
