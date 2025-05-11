@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import banner1 from "../assets/desktop/banner3.png";
+import banner1 from "../assets/desktop/banner2.png";
 import banner from "../assets/desktop/banner.jpg";
 import { motion } from "framer-motion";
 function TopBanner() {
