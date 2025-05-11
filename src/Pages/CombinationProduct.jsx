@@ -22,6 +22,7 @@ function CombinationProduct() {
   const showProdDetails = (id) => {
     navigate(`/productDetails/${id}`);
   };
+  console.log("fgfgi",import.meta.env.VITE_BACKEND_URL);
   const handleCart = async (product) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/cart/add`, {
