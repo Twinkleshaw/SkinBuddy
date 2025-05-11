@@ -7,7 +7,7 @@ import Combinaton from "./CombinationProduct";
 import Sensitive from "./SensitiveProduct";
 function Home() {
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <TopBanner />
       <Bestseller />
       <Oily />

@@ -1,13 +1,26 @@
 /* eslint-disable no-unused-vars */
-import banner1 from "../assets/desktop/banner1.jpg";
+import banner1 from "../assets/desktop/banner3.png";
+import banner from "../assets/desktop/banner.jpg";
 import { motion } from "framer-motion";
 function TopBanner() {
   return (
     <motion.div
         initial={{ opacity: 0,y:50 }}
         animate={{ opacity: 1 ,y:0}}
-        transition={{duration:2}} className="relative w-full pt-16">
-      <img src={banner1} alt="" className="w-full h-[600px] object-conatin" />
+        transition={{duration:2}} className="relative w-full pt-32 lg:pt-20">
+       {/* Desktop Banner */}
+       <img
+        src={banner1}
+        alt="Desktop Banner"
+        className="hidden lg:block w-full h-[700px] object-fit"
+      />
+
+      {/* Mobile Banner */}
+      <img
+        src={banner}
+        alt="Mobile Banner"
+        className="block lg:hidden w-full h-[400px] object-cover"
+      />
       {/* <motion.div
         initial={{ opacity: 0,y:-50 }}
         animate={{ opacity: 1 ,y:0}}

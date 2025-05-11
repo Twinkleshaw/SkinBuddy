@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { ProductProvider } from './Context/ProductContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { CartProvider } from './Context/CartContext'
+import { CheckoutProvider } from './Context/CheckoutContext'
 
 
 createRoot(document.getElementById('root')).render(
@@ -12,7 +13,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <CartProvider>
     <ProductProvider>
+    <CheckoutProvider>
     <App />
+    </CheckoutProvider>
     </ProductProvider>
     </CartProvider>
   </StrictMode>

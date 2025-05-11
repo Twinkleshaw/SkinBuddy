@@ -6,7 +6,7 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-
+  
   const addToCart = (product) => {
     setCartItems((prev) => [...prev, product]);
   };

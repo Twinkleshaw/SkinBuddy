@@ -1,17 +1,20 @@
 import { RxCross2 } from "react-icons/rx";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCheckout } from "../Context/CheckoutContext";
 
-function Cart({ isOpen, onClose, onTriggerLogin }) {
+function Cart({ isCartOpen, onClose, onTriggerLogin, onCheckout }) {
   const [cartData, setCartData] = useState();
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const { setCart } = useCheckout(); 
   const handleLogin = () => {
     onClose();
     onTriggerLogin();
   };
 
   useEffect(() => {
-    
     const fetchCart = async () => {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/cart/`,
@@ -29,14 +32,16 @@ function Cart({ isOpen, onClose, onTriggerLogin }) {
     };
 
     fetchCart();
-  }, [isOpen]);
-  if (!isOpen) return ;
+  }, [isCartOpen]);
+
+  if (!isCartOpen) return;
 
   const subtotal = cartData?.reduce(
     (total, item) => total + item.productId.price * item.quantity,
     0
   );
-  
+  console.log(cartData)
+
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-end z-50">
       <div className="relative px-4 bg-white py-4 border-l border-gray-300 w-full max-w-[450px]">
@@ -101,7 +106,14 @@ function Cart({ isOpen, onClose, onTriggerLogin }) {
             <p>Subtotal</p>
             <p>₹{subtotal}</p>
           </div>
-          <button className="w-full bg-[#f18526] text-white font-semibold py-2 rounded-md">
+          <button
+            className="w-full bg-[#f18526] text-white font-semibold py-2 rounded-md cursor-pointer"
+            onClick={() => {
+              onClose();
+              onCheckout();
+              setCart(subtotal)
+            }}
+          >
             Checkout
           </button>
         </div>

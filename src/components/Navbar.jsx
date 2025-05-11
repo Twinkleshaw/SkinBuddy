@@ -1,29 +1,55 @@
-import { IoPerson } from "react-icons/io5";
+import { IoPerson, IoMenu, IoClose } from "react-icons/io5";
 import { FaCartShopping } from "react-icons/fa6";
 import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Login from "./Auth/Login";
 import Signup from "./Auth/SignUp";
 import Cart from "./Cart";
 import { useCart } from "../Context/CartContext";
-import { RxCross2 } from "react-icons/rx";
+import Address from "../Pages/Address";
+import ModeOfPayment from "../Pages/ModeOfPayment";
+
 function Navbar() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
+  const [openAddress, setOpenAddress] = useState(false);
+  const [openPayment, setOpenPayment] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartItems } = useCart();
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const profileRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleOpenLogin = () => {
     setShowLogin(true);
-    setShowSignup(false); // close signup if open
+    setShowSignup(false);
+    setMobileMenuOpen(false);
   };
 
   const handleOpenSignup = () => {
     setShowSignup(true);
-    setShowLogin(false); // close login if open
+    setShowLogin(false);
+    setMobileMenuOpen(false);
   };
 
   const handleCloseModals = () => {
@@ -34,127 +60,268 @@ function Navbar() {
 
   const handleCart = () => {
     setOpenCart(true);
+    setMobileMenuOpen(false);
   };
 
-    const handleProfile = () => {
-      setIsProfileOpen(true);
-    };
+  const handleOrders = () => {
+    navigate("/orders");
+    setIsProfileOpen(false);
+    setMobileMenuOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+    setIsProfileOpen(false);
+    setMobileMenuOpen(false);
+  };
 
   return (
-    <div className="fixed top-0 left-0 z-50 w-full bg-white shadow">
-      <nav>
-        <ul className="flex items-center justify-around h-20">
-          <div className="w-full">
-            <Link to={"/"}>
-              <img src={logo} alt="SkinBuddy" className="w-[70%]" />
-            </Link>
-          </div>
-          <div
-            className="flex justify-center w-full gap-12 text-lg font-medium text-gray-700"
-            style={{ fontFamily: "Roboto, sans-serif" }}
-          >
-            <Link
-              to="/shop"
-              className="border-b-2 border-transparent hover:border-b-[#539d68]  transition duration-300"
-            >
-              Shop
-            </Link>
-            <Link
-              to="/about"
-              className="border-b-2 border-transparent hover:border-b-[#539d68] transition duration-300"
-            >
-              About Us
-            </Link>
-            <Link
-              to="/contact"
-              className="border-b-2 border-transparent hover:border-b-[#539d68] transition duration-300"
-            >
-              Contact Us
+    <div className="fixed top-0 left-0 z-50 w-full bg-white shadow-md">
+      <div className="container mx-auto px-4">
+        {/* Main Navbar */}
+        <nav className="flex items-center justify-between h-20">
+          {/* Logo - Always visible */}
+          <div className="flex-shrink-0 w-32 md:w-40">
+            <Link to="/">
+              <img 
+                src={logo} 
+                alt="SkinBuddy" 
+                className="w-full h-auto object-contain hover:opacity-90 transition-opacity" 
+              />
             </Link>
           </div>
 
-          <div className="flex items-center justify-center w-full h-full">
-            <div className="flex justify-between bg-gray-100 rounded w-[70%]">
+          {/* Search Bar - Always visible */}
+          <div className="hidden sm:flex flex-1 max-w-xl mx-4">
+            <form onSubmit={handleSearch} className="relative w-full">
               <input
                 type="text"
-                placeholder="Search..."
-                className="px-2 text-xl text-gray-700 outline-none"
+                placeholder="Search products..."
+                className="w-full py-2 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f18526] focus:border-transparent transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <div className="relative">
-                <span className="absolute inline-flex h-full w-full rounded border animate-ping bg-[#f18526] opacity-75" />
-                <div className="relative px-2 py-1 border rounded bg-[#f18526] text-white">
-                  <IoIosSearch size={25} />
-                </div>
-              </div>
-            </div>
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#f18526] text-white p-1.5 rounded-full hover:bg-[#d9731d] transition-colors"
+              >
+                <IoIosSearch size={20} />
+              </button>
+            </form>
           </div>
 
-          <div className="flex relative  justify-end p-6 pr-20 gap-6 w-[50%]">
-            {token ? (
-              <>
-                {isProfileOpen ? (
-                  <button onClick={() => setIsProfileOpen(false)}>
-                    <RxCross2
-                      size={25}
-                      className="text-gray-700 cursor-pointer"
-                    />
-                  </button>
-                ) : (
-                  <button onClick={() => setIsProfileOpen(true)}>
-                    <IoPerson
-                      size={25}
-                      className="text-gray-700 cursor-pointer"
-                    />
-                  </button>
-                )}
+          {/* Desktop Navigation and Actions */}
+          <div className="hidden lg:flex items-center space-x-6">
+            <div className="flex space-x-8 mr-6">
+              {[
+                { path: "/shop", label: "Shop" },
+                { path: "/about-us", label: "About Us" },
+                { path: "/contact-us", label: "Contact Us" }
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="relative text-lg font-medium text-gray-700 hover:text-[#f18526] transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#539d68] hover:after:w-full after:transition-all"
+                  style={{ fontFamily: "Roboto, sans-serif" }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
 
+            {token ? (
+              <div className="relative" ref={profileRef}>
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Profile"
+                >
+                  <IoPerson size={22} className="text-gray-700" />
+                </button>
+                
                 {isProfileOpen && (
-                  <div className="absolute z-50 mt-6 bg-white border border-gray-400 rounded shadow-lg left-2 w-36">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                     <button
-                      onClick={handleProfile}
-                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      onClick={() => {
+                        navigate("/profile");
+                        setIsProfileOpen(false);
+                      }}
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                      Profile
+                      My Profile
                     </button>
                     <button
-                      onClick={handleProfile}
-                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      onClick={handleOrders}
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                      Order History
+                      My Orders
                     </button>
                     <button
-                      // onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       Logout
                     </button>
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <button
                 onClick={handleOpenLogin}
-                className="text-white bg-[#539d68] px-2 py-0.5 rounded"
+                className="px-4 py-2 bg-[#539d68] text-white rounded-md hover:bg-[#3e7a52] transition-colors font-medium"
               >
                 Login
               </button>
             )}
 
             <div className="relative">
-              <FaCartShopping
-                size={25}
-                className="text-gray-700 cursor-pointer"
+              <button 
                 onClick={handleCart}
-              />
-              {cartItems.length > 0 && (
-                <span className="absolute top-[-8px] right-[-8px] bg-[#C91010] text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItems.length}
-                </span>
-              )}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
+                aria-label="Cart"
+              >
+                <FaCartShopping size={22} className="text-gray-700" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#C91010] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
-        </ul>
-      </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center space-x-4">
+            <div className="relative">
+              <button 
+                onClick={handleCart}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
+                aria-label="Cart"
+              >
+                <FaCartShopping size={22} className="text-gray-700" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#C91010] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
+            </div>
+            
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? (
+                <IoClose size={26} className="text-gray-700" />
+              ) : (
+                <IoMenu size={26} className="text-gray-700" />
+              )}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Search (shown only when menu is closed) */}
+        {!mobileMenuOpen && (
+          <div className="sm:hidden pb-3 px-2">
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="w-full py-2 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f18526] focus:border-transparent transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#f18526] text-white p-1.5 rounded-full hover:bg-[#d9731d] transition-colors"
+              >
+                <IoIosSearch size={20} />
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div 
+          ref={mobileMenuRef}
+          className="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40"
+        >
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-col space-y-4">
+              {[
+                { path: "/shop", label: "Shop" },
+                { path: "/about-us", label: "About Us" },
+                { path: "/contact-us", label: "Contact Us" }
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="py-2 px-4 text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              <div className="border-t border-gray-200 pt-4">
+                {token ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        navigate("/profile");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      My Profile
+                    </button>
+                    <button
+                      onClick={handleOrders}
+                      className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      My Orders
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleOpenLogin}
+                      className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={handleOpenSignup}
+                      className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      Sign Up
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <Login
@@ -168,10 +335,34 @@ function Navbar() {
         onSwitchToLogin={handleOpenLogin}
       />
       <Cart
-        isOpen={openCart}
+        isCartOpen={openCart}
         onClose={handleCloseModals}
         showLogin={showLogin}
-        onTriggerLogin={handleOpenLogin} // ⬅️ pass this
+        onTriggerLogin={handleOpenLogin}
+        onCheckout={() => {
+          setOpenCart(false);
+          setOpenAddress(true);
+        }}
+      />
+      <Address
+        isOpen={openAddress}
+        onClose={() => setOpenAddress(false)}
+        openCart={() => {
+          setOpenAddress(false);
+          setOpenCart(true);
+        }}
+        goToPayment={() => {
+          setOpenAddress(false);
+          setOpenPayment(true);
+        }}
+      />
+      <ModeOfPayment
+        isOpen={openPayment}
+        onClose={() => setOpenPayment(false)}
+        openCart={() => {
+          setOpenPayment(false);
+          setOpenAddress(true);
+        }}
       />
     </div>
   );
