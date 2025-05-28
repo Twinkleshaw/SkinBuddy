@@ -61,7 +61,7 @@ const Signup = ({ isOpen, onClose, onSwitchToLogin }) => {
             } else {
               const errorData = await response.json();
               console.error("Signup failed:", errorData.message);
-              toast.error("User already exists");
+              toast.error("User already exist");
             }
           } catch (error) {
             console.error("Signup error:", error.message);
