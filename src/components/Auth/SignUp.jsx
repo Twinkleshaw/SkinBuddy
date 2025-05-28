@@ -61,7 +61,7 @@ const Signup = ({ isOpen, onClose, onSwitchToLogin }) => {
             } else {
               const errorData = await response.json();
               console.error("Signup failed:", errorData.message);
-              toast.error("User already exist");
+              toast.error("User already exists");
             }
           } catch (error) {
             console.error("Signup error:", error.message);
@@ -123,7 +123,7 @@ const Signup = ({ isOpen, onClose, onSwitchToLogin }) => {
               Sign Up
             </button>
           </form>
-          <div className="mt-4 justify-center items-center">
+          <div className="mt-4 flex justify-center items-center">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleFailure}
