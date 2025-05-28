@@ -137,7 +137,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
             Login
           </button>
         </form>
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center items-center">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleFailure}
