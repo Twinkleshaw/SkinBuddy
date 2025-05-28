@@ -54,7 +54,7 @@ function SensitiveProduct() {
         <div className="w-24 h-1 bg-[#f18526] mx-auto mt-4 rounded-full"></div>
       </h2>
       
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 lg:gap-8 grid-cols-2 lg:grid-cols-4">
         {sensitive?.slice(0, 4).map((product, i) => (
           <motion.div
             key={i}
@@ -82,7 +82,7 @@ function SensitiveProduct() {
             </div>
             
             {/* Product Info */}
-            <div className="p-5 space-y-2 border-t border-gray-100">
+            <div className="lg:p-5 p-1.5 space-y-2 border-t border-gray-100">
               <h3 
                 className="text-[15px] font-semibold text-gray-800 "
                 onClick={() => showProdDetails(product?._id)}
@@ -93,20 +93,22 @@ function SensitiveProduct() {
               <div className="">
                 <p className="text-[16px] font-bold text-[#f18526]">₹{product?.price}</p>
               </div>
-              <div className="flex items-center">
+
+              <div className="flex flex-col lg:flex-row lg:items-center">
               <div className="flex text-amber-400">
                 {[...Array(5)].map((_, i) => (
                   <StarIcon key={i} className="w-4 h-4 fill-current" />
                 ))}
               </div>
-              <span className="ml-1 text-xs text-gray-500">(24 reviews)</span>
+              <span className="ml-1 text-xs text-gray-500 ">(24 reviews)</span>
             </div>
+              
               
               {/* Add to Cart Button */}
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-2 px-4 bg-[#539d68] hover:bg-[#3e7a52] text-white font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
+                className="w-full lg:py-2 py-1 px-4  bg-[#539d68] hover:bg-[#3e7a52] text-white font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
                 onClick={() => { addToCart(product), handleCart(product) }}
               >
                 <ShoppingCartIcon className="w-5 h-5" />
@@ -119,7 +121,8 @@ function SensitiveProduct() {
       
       {/* View All Button */}
       <div className="mt-12 text-center">
-        <button className="px-8 py-3 border-2 border-[#f18526] text-[#f18526] font-medium rounded-full hover:bg-[#f18526] hover:text-white transition-colors duration-300">
+        <button className="px-8 py-3 border-2 border-[#f18526] text-[#f18526] font-medium rounded-full hover:bg-[#f18526] hover:text-white transition-colors duration-300"
+         onClick={()=>navigate('/all/Sensitive')}>
           View All 
         </button>
       </div>

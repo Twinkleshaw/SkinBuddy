@@ -1,38 +1,77 @@
 import { RxCross2 } from "react-icons/rx";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../Context/CheckoutContext";
-
+import { toast } from "react-toastify";
 function Cart({ isCartOpen, onClose, onTriggerLogin, onCheckout }) {
   const [cartData, setCartData] = useState();
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
-  const { setCart } = useCheckout(); 
+  const { setCart } = useCheckout();
   const handleLogin = () => {
     onClose();
     onTriggerLogin();
   };
 
-  useEffect(() => {
-    const fetchCart = async () => {
+
+  const fetchCart = async () => {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/cart/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setCartData(data.items);
+    }
+  };
+
+  const updateQuantity = async (productId, quantity) => {
+    try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/cart/`,
+        `${import.meta.env.VITE_BACKEND_URL}/cart/update/${productId}`,
         {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({ quantity }),
         }
       );
+  
       if (response.ok) {
-        const data = await response.json();
-        setCartData(data.items);
+        fetchCart(); // refresh cart after updating
+      } else {
+        toast.error("Failed to update quantity");
       }
-    };
+    } catch (error) {
+      console.error("Update quantity error:", error);
+      toast.error("Something went wrong!");
+    }
+  };
 
+  
+  useEffect(() => {
     fetchCart();
   }, [isCartOpen]);
+
+  const removeItem = async (id) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/remove/${id}`,
+        {
+          method: "delete",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      fetchCart();
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+    }
+  };
 
   if (!isCartOpen) return;
 
@@ -40,7 +79,7 @@ function Cart({ isCartOpen, onClose, onTriggerLogin, onCheckout }) {
     (total, item) => total + item.productId.price * item.quantity,
     0
   );
-  console.log(cartData)
+  console.log(cartData);
 
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-end z-50">
@@ -88,11 +127,30 @@ function Cart({ isCartOpen, onClose, onTriggerLogin, onCheckout }) {
 
                 <div className="flex gap-4">
                   <div className="flex items-center gap-4 px-3 text-sm bg-gray-200 rounded w-fit mt-2">
-                    <FaMinus className="cursor-pointer" size={10} />
+                    <button
+                      onClick={() => {
+                        if (item.quantity > 1) {
+                          updateQuantity(item.productId._id, item.quantity - 1);
+                        }
+                      }}
+                    >
+                      <FaMinus className="cursor-pointer" size={10} />
+                    </button>
+
                     <span>{item?.quantity}</span>
-                    <FaPlus className="cursor-pointer" size={10} />
+
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.productId._id, item.quantity + 1)
+                      }
+                    >
+                      <FaPlus className="cursor-pointer" size={10} />
+                    </button>
                   </div>
-                  <button className="text-xs text-gray-600 underline mt-1">
+                  <button
+                    className="text-xs text-gray-600 underline mt-1"
+                    onClick={() => removeItem(item?.productId?._id)}
+                  >
                     Remove
                   </button>
                 </div>
@@ -101,22 +159,24 @@ function Cart({ isCartOpen, onClose, onTriggerLogin, onCheckout }) {
           ))}
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full bg-white px-4 py-3 border-t shadow-md">
-          <div className="flex justify-between text-[18px] font-medium mb-2">
-            <p>Subtotal</p>
-            <p>₹{subtotal}</p>
+        {token && (
+          <div className="absolute bottom-0 left-0 w-full bg-white px-4 py-3 border-t shadow-md">
+            <div className="flex justify-between text-[18px] font-medium mb-2">
+              <p>Subtotal</p>
+              <p>₹{subtotal}</p>
+            </div>
+            <button
+              className="w-full bg-[#f18526] text-white font-semibold py-2 rounded-md cursor-pointer"
+              onClick={() => {
+                onClose();
+                onCheckout();
+                setCart(subtotal);
+              }}
+            >
+              Checkout
+            </button>
           </div>
-          <button
-            className="w-full bg-[#f18526] text-white font-semibold py-2 rounded-md cursor-pointer"
-            onClick={() => {
-              onClose();
-              onCheckout();
-              setCart(subtotal)
-            }}
-          >
-            Checkout
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

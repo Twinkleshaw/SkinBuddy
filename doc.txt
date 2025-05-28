@@ -12,5 +12,5 @@ fs module
 redis (caching)
 stream
 sso
-sockets
+sockets 
 graph

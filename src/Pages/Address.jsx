@@ -2,10 +2,11 @@ import { IoIosArrowBack } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
 import { useCheckout } from "../Context/CheckoutContext";
+import { useNavigate } from "react-router-dom";
 
 function Address({ isOpen, onClose, openCart, goToPayment }) {
   const { address, setAddress } = useCheckout(); // get from context
-
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -23,9 +24,17 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
   };
 
   const handleSaveAddress = () => {
+    const { fullName, phone, road, city, state, pincode } = formData;
+  
+    if (!fullName || !phone || !road || !city || !state || !pincode) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
     setAddress(formData);
-    console.log(formData);
+    goToPayment(); 
   };
+  
 
   if (!isOpen) return null;
 
@@ -51,6 +60,7 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.fullName}
             onChange={handleChange}
             className="border border-gray-400 p-2 rounded outline-none"
+            required
           />
           <input
             name="phone"
@@ -59,6 +69,7 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.phone}
             onChange={handleChange}
             className="border border-gray-400 p-2 rounded outline-none"
+            required
           />
           <input
             name="road"
@@ -67,6 +78,7 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.road}
             onChange={handleChange}
             className="border border-gray-400 p-2 rounded outline-none"
+            required
           />
           <input
             name="city"
@@ -75,6 +87,7 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.city}
             onChange={handleChange}
             className="border p-2 border-gray-400 rounded outline-none"
+            required
           />
           <input
             name="state"
@@ -83,6 +96,7 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.state}
             onChange={handleChange}
             className="border p-2 border-gray-400 rounded outline-none"
+            required
           />
           <input
             name="pincode"
@@ -91,12 +105,23 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
             value={formData.pincode}
             onChange={handleChange}
             className="border border-gray-400 p-2 rounded outline-none"
+            required
           />
         </div>
 
         {/* Save address button */}
         <div className="flex flex-col gap-4 mt-4 px-4">
-          <button className="w-full text-[#f18526] border border-[#f18526] font-semibold py-2 rounded-md cursor-pointer">
+          <button className="w-full text-[#f18526] border border-[#f18526] font-semibold py-2 rounded-md cursor-pointer"
+         onClick={() =>
+          setFormData({
+            fullName: "",
+            phone: "",
+            road: "",
+            city: "",
+            state: "",
+            pincode: "",
+          })
+        }>
             Change Address
           </button>
         </div>
@@ -104,7 +129,6 @@ function Address({ isOpen, onClose, openCart, goToPayment }) {
         {/* Continue to Payment */}
         <div
           className="absolute bottom-0 left-0 w-full bg-white px-4 py-3 shadow-md"
-          onClick={goToPayment}
         >
           <button
             className="w-full bg-[#f18526] text-white font-semibold py-2 rounded-md cursor-pointer"

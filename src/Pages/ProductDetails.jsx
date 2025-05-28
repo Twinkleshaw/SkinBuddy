@@ -4,6 +4,8 @@ import { useProduct } from "../Context/ProductContext";
 import { useParams } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { IoArrowBackOutline } from "react-icons/io5";
 const usageData = {
   steps: [
     {
@@ -89,8 +91,19 @@ function ProductDetails() {
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen pt-28 lg:pt-20 pb-10 bg-gray-50">
+      <div className="w-[90%] max-w-6xl">
+        <motion.button
+          onClick={() => window.history.back()}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 lg:mt-5 mt-10 mb-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+        >
+          <IoArrowBackOutline />
+          <span className="text-sm font-medium">Back to Products</span>
+        </motion.button>
+      </div>
       {/* Product Card */}
-      <div className="w-[90%] max-w-6xl bg-white rounded-xl mt-10 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:flex">
+      <div className="w-[90%] max-w-6xl bg-white rounded-xl  p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:flex">
         {/* Image Section */}
         <div className="lg:w-[40%] flex items-center justify-center p-4 bg-gray-50 rounded-lg">
           <img
@@ -157,7 +170,12 @@ function ProductDetails() {
               <ShoppingCartIcon className="w-5 h-5" />
               Add to Cart
             </button>
-            <button className="px-6 py-3 border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-lg text-lg font-medium transition-colors duration-300">
+            <button
+              className="px-6 py-3 border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-lg text-lg font-medium transition-colors duration-300"
+              onClick={() => {
+                addToCart(details), handleCart(details);
+              }}
+            >
               Buy Now
             </button>
           </div>

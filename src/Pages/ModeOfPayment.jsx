@@ -4,7 +4,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
 import { useCheckout } from "../Context/CheckoutContext";
-
+import { toast } from "react-toastify";
 
 function ModeOfPayment({ isOpen, onClose, openCart }) {
   const [selectedMode, setSelectedMode] = useState("");
@@ -13,7 +13,7 @@ function ModeOfPayment({ isOpen, onClose, openCart }) {
 
   const handlePayment = async() => {
     if (!selectedMode) {
-      alert("Please select a payment method.");
+      toast("Please select a payment method.");
       return;
     }
 
@@ -39,15 +39,17 @@ function ModeOfPayment({ isOpen, onClose, openCart }) {
       const data = await response.json();
     
       if (response.ok) {
-        alert("Order placed successfully!");
+        toast("Order placed successfully!");
+        console.log(data)
         onClose();
+        // window.location.reload();
       } else {
         console.error("Server error:", data);
         alert(data.message || "Failed to place the order.");
       }
     } catch (err) {
       console.error("Order placement failed", err);
-      alert("Something went wrong while placing the order.");
+      toast("Something went wrong while placing the order.");
     }
     
   };
@@ -99,6 +101,7 @@ function ModeOfPayment({ isOpen, onClose, openCart }) {
           <button
             onClick={handlePayment}
             className="bg-[#f18526] text-white py-2 rounded mt-4 font-semibold"
+            
           >
             Proceed
           </button>

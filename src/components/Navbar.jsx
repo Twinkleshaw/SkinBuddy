@@ -22,6 +22,7 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartItems } = useCart();
   const token = localStorage.getItem("token");
+  const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
   const profileRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -32,7 +33,10 @@ function Navbar() {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
         setMobileMenuOpen(false);
       }
     };
@@ -69,14 +73,14 @@ function Navbar() {
     setMobileMenuOpen(false);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      setMobileMenuOpen(false);
-    }
-  };
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (searchQuery.trim()) {
+  //     navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+  //     setSearchQuery("");
+  //     setMobileMenuOpen(false);
+  //   }
+  // };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -85,6 +89,33 @@ function Navbar() {
     setMobileMenuOpen(false);
   };
 
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (value.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/product/search?query=${value}`
+      );
+      const data = await res.json();
+      setSuggestions(data);
+      console.log(data);
+    } catch (err) {
+      console.error("Error fetching suggestions:", err);
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelect = (product) => {
+    navigate(`/productDetails/${product._id}`); // Assuming your product details route is '/product/:id'
+    setSearchQuery("");
+    setSuggestions([]);
+  };
   return (
     <div className="fixed top-0 left-0 z-50 w-full bg-white shadow-md">
       <div className="container mx-auto px-4">
@@ -93,31 +124,46 @@ function Navbar() {
           {/* Logo - Always visible */}
           <div className="flex-shrink-0 w-32 md:w-40">
             <Link to="/">
-              <img 
-                src={logo} 
-                alt="SkinBuddy" 
-                className="w-full h-auto object-contain hover:opacity-90 transition-opacity" 
+              <img
+                src={logo}
+                alt="SkinBuddy"
+                className="w-full h-auto object-contain hover:opacity-90 transition-opacity"
               />
             </Link>
           </div>
 
           {/* Search Bar - Always visible */}
-          <div className="hidden sm:flex flex-1 max-w-xl mx-4">
-            <form onSubmit={handleSearch} className="relative w-full">
+          <div className="hidden sm:flex flex-1 max-w-xl mx-4 relative">
+            <form className="relative w-full">
               <input
                 type="text"
                 placeholder="Search products..."
                 className="w-full py-2 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f18526] focus:border-transparent transition-all"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleInputChange}
               />
-              <button 
+              <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#f18526] text-white p-1.5 rounded-full hover:bg-[#d9731d] transition-colors"
               >
                 <IoIosSearch size={20} />
               </button>
             </form>
+
+            {/* Suggestions dropdown */}
+            {suggestions && suggestions.length > 0 && (
+              <ul className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                {suggestions.map((product) => (
+                  <li
+                    key={product._id}
+                    onClick={() => handleSelect(product)}
+                    className="px-4 py-2 cursor-pointer hover:bg-orange-100 transition-colors"
+                  >
+                    {product.name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Desktop Navigation and Actions */}
@@ -126,7 +172,7 @@ function Navbar() {
               {[
                 { path: "/shop", label: "Shop" },
                 { path: "/about-us", label: "About Us" },
-                { path: "/contact-us", label: "Contact Us" }
+                { path: "/contact-us", label: "Contact Us" },
               ].map((item) => (
                 <Link
                   key={item.path}
@@ -141,17 +187,17 @@ function Navbar() {
 
             {token ? (
               <div className="relative" ref={profileRef}>
-                <button 
+                <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                   aria-label="Profile"
                 >
                   <IoPerson size={22} className="text-gray-700" />
                 </button>
-                
+
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    <button
+                    {/* <button
                       onClick={() => {
                         navigate("/profile");
                         setIsProfileOpen(false);
@@ -159,7 +205,7 @@ function Navbar() {
                       className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       My Profile
-                    </button>
+                    </button> */}
                     <button
                       onClick={handleOrders}
                       className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors"
@@ -185,7 +231,7 @@ function Navbar() {
             )}
 
             <div className="relative">
-              <button 
+              <button
                 onClick={handleCart}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
                 aria-label="Cart"
@@ -203,7 +249,7 @@ function Navbar() {
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center space-x-4">
             <div className="relative">
-              <button 
+              <button
                 onClick={handleCart}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
                 aria-label="Cart"
@@ -216,8 +262,8 @@ function Navbar() {
                 )}
               </button>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
               aria-label="Menu"
@@ -234,28 +280,42 @@ function Navbar() {
         {/* Mobile Search (shown only when menu is closed) */}
         {!mobileMenuOpen && (
           <div className="sm:hidden pb-3 px-2">
-            <form onSubmit={handleSearch} className="relative">
+            <form className="relative">
               <input
                 type="text"
                 placeholder="Search products..."
                 className="w-full py-2 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f18526] focus:border-transparent transition-all"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleInputChange}
               />
-              <button 
+              <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#f18526] text-white p-1.5 rounded-full hover:bg-[#d9731d] transition-colors"
               >
                 <IoIosSearch size={20} />
               </button>
             </form>
+            {/* Suggestions dropdown */}
+            {suggestions && suggestions.length > 0 && (
+              <ul className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                {suggestions.map((product) => (
+                  <li
+                    key={product._id}
+                    onClick={() => handleSelect(product)}
+                    className="px-4 py-2 cursor-pointer hover:bg-orange-100 transition-colors"
+                  >
+                    {product.name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div 
+        <div
           ref={mobileMenuRef}
           className="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40"
         >
@@ -264,7 +324,7 @@ function Navbar() {
               {[
                 { path: "/shop", label: "Shop" },
                 { path: "/about-us", label: "About Us" },
-                { path: "/contact-us", label: "Contact Us" }
+                { path: "/contact-us", label: "Contact Us" },
               ].map((item) => (
                 <Link
                   key={item.path}
@@ -279,7 +339,7 @@ function Navbar() {
               <div className="border-t border-gray-200 pt-4">
                 {token ? (
                   <>
-                    <button
+                    {/* <button
                       onClick={() => {
                         navigate("/profile");
                         setMobileMenuOpen(false);
@@ -287,7 +347,7 @@ function Navbar() {
                       className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"
                     >
                       My Profile
-                    </button>
+                    </button> */}
                     <button
                       onClick={handleOrders}
                       className="w-full py-2 px-4 text-left text-lg font-medium text-gray-700 hover:text-[#f18526] hover:bg-gray-50 rounded-md transition-colors"

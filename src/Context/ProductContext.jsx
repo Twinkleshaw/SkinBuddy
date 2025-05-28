@@ -87,6 +87,7 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
+  
   return (
     <ProductContext.Provider
       value={{ getAllProductsByCategory, getBestsellerProducts ,fetchProductById,getAllProducts}}
